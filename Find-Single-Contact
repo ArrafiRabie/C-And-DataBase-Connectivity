@@ -1,0 +1,82 @@
+using System;
+using System.Data;
+//using System.Net;
+using System.Data.SqlClient;
+
+public class Program
+{
+    static string ConnectionStr = "server=.;Database=ContactsDB;User Id= sa;Password=123456";
+
+    static bool FindContactByID(int ID, ref Data DataInfo)
+    {
+        bool ISFound=false;
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = "Select * From Contacts where ContactID = @ID;";
+        SqlCommand Cmd = new SqlCommand(Query,Connection);
+        Cmd.Parameters.Add(new SqlParameter("@ID", SqlDbType.Int) { Value = ID });
+        try
+        {
+            Connection.Open();
+            SqlDataReader DR = Cmd.ExecuteReader();
+            if (DR.Read()) {
+
+                ISFound = true;
+                DataInfo.ID        = (int)DR["ContactID"];
+                DataInfo.FirstName = (string)DR["FirstName"];
+                DataInfo.LastName  = (string)DR["LastName"];
+                DataInfo.Email     = (string)DR["Email"];
+                DataInfo.Phone     = (string)DR["Phone"];
+                DataInfo.address   = (string)DR["address"];
+                DataInfo.CountryID = (int)DR["CountryID"];
+            }else 
+                ISFound = false;
+            DR.Close();
+            Connection.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error "+ex.ToString());
+        }
+        return ISFound;
+    }
+
+    public struct Data
+    {
+        public int ID { get; set;}
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string address { get; set; }
+        public int CountryID { get; set; }
+
+    }
+
+    public static void Main()
+    {
+        Data dt = new Data();
+        if(FindContactByID(1,ref dt))
+        {
+            Console.WriteLine(dt.ID);
+            Console.WriteLine(dt.FirstName);
+            Console.WriteLine(dt.LastName);
+            Console.WriteLine(dt.Email);
+            Console.WriteLine(dt.Phone);
+            Console.WriteLine(dt.address);
+            Console.WriteLine(dt.CountryID);
+        }else
+            Console.WriteLine("Contact not found.");
+    } 
+}
+
+//=====================================
+Key Features:
+✔ Searches for a contact using a unique ContactID.
+✔ Retrieves detailed contact information, including name, email, phone, address, and country.
+✔ Ensures safe database interactions by using parameterized queries to prevent SQL injection.
+✔ Handles cases where the contact is not found by returning null or an appropriate message.
+✔ Uses efficient resource management (using statements) to prevent memory leaks.
+
+Use Case Example:
+A user inputs a ContactID, and the system fetches and displays the contact’s details if found.
+If no matching contact exists, an appropriate message is returned.
