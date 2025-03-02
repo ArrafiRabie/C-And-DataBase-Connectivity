@@ -1,0 +1,40 @@
+using System;
+using System.Data;
+//using System.Net;
+using System.Data.SqlClient;
+
+public class Program
+{
+    static string ConnectionStr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+    static string RetrieveASingleValue(string LastName) {
+        string Value = null;
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = "SELECT FirstName FROM Contacts WHERE LastName = @LastName";
+        SqlCommand Command = new SqlCommand(Query, Connection);
+        Command.Parameters.Add(new SqlParameter("@LastName", SqlDbType.NVarChar) { Value = LastName });
+        try
+        {
+            Connection.Open();
+            object Reader = Command.ExecuteScalar();
+            if (Reader != null)
+                Value = Reader.ToString();
+            else
+                Value = "";
+
+            Connection.Close();
+        }
+        catch (Exception EX)
+        {
+            Console.WriteLine("Error " + EX.Message);
+            Value = "Error Occurred";
+        }
+        return Value;
+    }
+    public static void Main()
+    {
+        string AR;
+        AR = RetrieveASingleValue("Asu");
+        Console.WriteLine(AR);
+    }
+}
