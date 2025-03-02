@@ -1,0 +1,45 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConnectionTest
+{
+    internal class program {
+
+        static string ConnectionStr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+        static bool RemoveData(int Condition) {
+            bool isDeleted = false;
+            string Query = "DELETE FROM Contacts Where ContactID = @ContactID";
+
+            using (SqlConnection Connection = new SqlConnection(ConnectionStr))
+            using (SqlCommand Command = new SqlCommand(Query, Connection))
+            {
+                Command.Parameters.Add(new SqlParameter("@ContactID", SqlDbType.Int) { Value = Condition });
+                try
+                {
+                    Connection.Open();
+                    int Result = Command.ExecuteNonQuery();
+
+                    isDeleted = Result > 0;
+
+                    Connection.Close();
+                }
+                catch (Exception EX)
+                {
+                    Console.WriteLine($"Error {EX.Message}");
+                }
+            }
+
+            return isDeleted;
+        }
+
+        public static void Main(string[] args) {
+            
+            if(RemoveData(186))
+                Console.WriteLine("Update process completed successfully");
+            else
+                Console.WriteLine("Update failed");
+        }
+    }
+}
