@@ -1,0 +1,127 @@
+sing System;
+using System.Data;
+//using System.Net;
+using System.Data.SqlClient;
+
+public class Program
+{
+    private static string ConnectionStr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+    static void SearcheConctactsStartWith(string CharacterOne) {
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = $"Select * From Contacts Where FirstName LIKE  @CharacterOne + '%' ";
+        SqlCommand Command = new SqlCommand(Query,Connection);
+        Command.Parameters.Add(new SqlParameter("@CharacterOne", SqlDbType.NVarChar) {Value = CharacterOne});
+        try
+        {
+            Connection.Open();
+            SqlDataReader Reader = Command.ExecuteReader();
+            while (Reader.Read())
+            {
+                int contactID    = Reader.GetInt32(Reader.GetOrdinal("ContactID"));
+                string firstName = Reader.GetString(Reader.GetOrdinal("FirstName"));
+                string lastName  = Reader.GetString(Reader.GetOrdinal("LastName"));
+                string email     = Reader.GetString(Reader.GetOrdinal("Email"));
+                string phone     = Reader.GetString(Reader.GetOrdinal("Phone"));
+                string address   = Reader.GetString(Reader.GetOrdinal("Address"));
+                int countryID    = Reader.GetInt32 (Reader.GetOrdinal("CountryID"));
+                Console.WriteLine($"ContactID = {contactID}");
+                Console.WriteLine($"FirstName = {firstName}");
+                Console.WriteLine($"LastName  = {lastName}");
+                Console.WriteLine($"Email     = {email}");
+                Console.WriteLine($"Phone     = {phone}");
+                Console.WriteLine($"Address   = {address}");
+                Console.WriteLine($"CountryID = {countryID}");
+                Console.WriteLine();
+            }
+            Reader.Close();
+            Connection.Close();
+        }
+        catch(Exception EX)
+        {
+            Console.WriteLine("Error" + EX.Message);
+        }
+    }
+
+    static void SearcheConctactsEndWith(string CharacterOne)
+    {
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = $"Select * From Contacts Where FirstName LIKE '%' + @CharacterOne";
+        SqlCommand Command = new SqlCommand(Query, Connection);
+        Command.Parameters.Add(new SqlParameter("@CharacterOne", SqlDbType.NVarChar) { Value = CharacterOne });
+        try
+        {
+            Connection.Open();
+            SqlDataReader Reader = Command.ExecuteReader();
+            while (Reader.Read())
+            {
+                int contactID = Reader.GetInt32(Reader.GetOrdinal("ContactID"));
+                string firstName = Reader.GetString(Reader.GetOrdinal("FirstName"));
+                string lastName = Reader.GetString(Reader.GetOrdinal("LastName"));
+                string email = Reader.GetString(Reader.GetOrdinal("Email"));
+                string phone = Reader.GetString(Reader.GetOrdinal("Phone"));
+                string address = Reader.GetString(Reader.GetOrdinal("Address"));
+                int countryID = Reader.GetInt32(Reader.GetOrdinal("CountryID"));
+                Console.WriteLine($"ContactID = {contactID}");
+                Console.WriteLine($"FirstName = {firstName}");
+                Console.WriteLine($"LastName  = {lastName}");
+                Console.WriteLine($"Email     = {email}");
+                Console.WriteLine($"Phone     = {phone}");
+                Console.WriteLine($"Address   = {address}");
+                Console.WriteLine($"CountryID = {countryID}");
+                Console.WriteLine();
+            }
+            Reader.Close();
+            Connection.Close();
+        }
+        catch (Exception EX)
+        {
+            Console.WriteLine("Error" + EX.Message);
+        }
+    }
+
+    static void SearcheConctactscontains(string CharacterOne)
+    {
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = $"Select * From Contacts Where FirstName LIKE '%' + @CharacterOne + '%'";
+        SqlCommand Command = new SqlCommand(Query, Connection);
+        Command.Parameters.Add(new SqlParameter("@CharacterOne", SqlDbType.NVarChar) { Value = CharacterOne });
+        try
+        {
+            Connection.Open();
+            SqlDataReader Reader = Command.ExecuteReader();
+            while (Reader.Read())
+            {
+                int contactID    = Reader.GetInt32(Reader.GetOrdinal("ContactID"));
+                string firstName = Reader.GetString(Reader.GetOrdinal("FirstName"));
+                string lastName  = Reader.GetString(Reader.GetOrdinal("LastName"));
+                string email     = Reader.GetString(Reader.GetOrdinal("Email"));
+                string phone     = Reader.GetString(Reader.GetOrdinal("Phone"));
+                string address   = Reader.GetString(Reader.GetOrdinal("Address"));
+                int countryID    = Reader.GetInt32 (Reader.GetOrdinal("CountryID"));
+                Console.WriteLine($"ContactID = {contactID}");
+                Console.WriteLine($"FirstName = {firstName}");
+                Console.WriteLine($"LastName  = {lastName}");
+                Console.WriteLine($"Email     = {email}");
+                Console.WriteLine($"Phone     = {phone}");
+                Console.WriteLine($"Address   = {address}");
+                Console.WriteLine($"CountryID = {countryID}");
+                Console.WriteLine();
+            }
+            Reader.Close();
+            Connection.Close();
+        }
+        catch (Exception EX)
+        {
+            Console.WriteLine("Error" + EX.Message);
+        }
+    }
+
+    public static void Main(string[] args) {
+
+        SearcheConctactsStartWith("d");
+        Console.WriteLine("==============================\n");
+        SearcheConctactsEndWith("y");
+        Console.WriteLine("==============================\n");
+        SearcheConctactscontains("ae");
+    }
+}
