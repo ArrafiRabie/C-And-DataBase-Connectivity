@@ -1,0 +1,117 @@
+using System;
+using System.Data;
+using System.Net;
+using System.Data.SqlClient;
+
+public class Program
+{
+    static string Connictionstr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456;";
+    static void ReturnData()
+    {
+        SqlConnection Connection = new SqlConnection(Connictionstr);
+        string Query = "Select * From Contacts";
+        SqlCommand Command = new SqlCommand(Query,Connection);
+        try
+        {
+            Connection.Open();
+            SqlDataReader Reader = Command.ExecuteReader();
+            while (Reader.Read())
+            {
+                // This 
+                int    ContactID = (int)Reader["CountryID"];
+                string FirstName = (string)Reader["FirstName"];
+                string LastName  = (string)Reader["LastName"];
+                string Email     = (string)Reader["Email"];
+                string Phone     = (string)Reader["Phone"];
+                string Address   = (string)Reader["Address"];
+                int    CountryID = (int)Reader["CountryID"];
+                // Or This
+                int    ContactID = (int)Reader[0];
+                string FirstName = (string)Reader[1];
+                string LastName  = (string)Reader[2];
+                string Email     = (string)Reader[3];
+                string Phone     = (string)Reader[4];
+                string Address   = (string)Reader[5];
+                int    CountryID = (int)Reader[6];
+                Console.WriteLine($"CountryID = {CountryID}");
+                Console.WriteLine($"FirstName = {FirstName}");
+                Console.WriteLine($"LastName  = {LastName}");
+                Console.WriteLine($"Email     = {Email}");
+                Console.WriteLine($"Phone     = {Phone}");
+                Console.WriteLine($"Address   = {Address}");
+                Console.WriteLine($"CountryID = {CountryID}");
+                Console.WriteLine();
+            }
+            Reader.Close();
+            Connection.Close();
+
+        }
+        catch (Exception Ex)
+        {
+            Console.WriteLine(" Error " + Ex.Message);
+        }
+    }
+
+    public static void Main()
+    {
+        ReturnData();
+    }
+}
+
+/////////////////////////////////////////
+
+static void PrintDataWithCondition(string FN, int CD = 0)
+{
+    string query;
+    if (CD >= 1)
+        query = "SELECT * FROM Contacts WHERE FirstName = @FirstName AND CountryID = @CountryID";
+    else
+        query = "SELECT * FROM Contacts WHERE FirstName = @FirstName";
+
+    try
+    {
+        using (SqlConnection connection = new SqlConnection(Connictionstr))
+        {
+            using (SqlCommand cmd = new SqlCommand(query, connection))
+            {
+                cmd.Parameters.Add(new SqlParameter("@FirstName", SqlDbType.NVarChar) { Value = FN });
+                if (CD >= 1)
+                {
+                    cmd.Parameters.Add(new SqlParameter("@CountryID", SqlDbType.Int) { Value = CD });
+                }
+
+                connection.Open();
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int contactID = reader.GetInt32(reader.GetOrdinal("ContactID"));
+                        string firstName = reader.GetString(reader.GetOrdinal("FirstName"));
+                        string lastName = reader.GetString(reader.GetOrdinal("LastName"));
+                        string email = reader.GetString(reader.GetOrdinal("Email"));
+                        string phone = reader.GetString(reader.GetOrdinal("Phone"));
+                        string address = reader.GetString(reader.GetOrdinal("Address"));
+                        int countryID = reader.GetInt32(reader.GetOrdinal("CountryID"));
+
+                        Console.WriteLine($"ContactID = {contactID}");
+                        Console.WriteLine($"FirstName = {firstName}");
+                        Console.WriteLine($"LastName  = {lastName}");
+                        Console.WriteLine($"Email     = {email}");
+                        Console.WriteLine($"Phone     = {phone}");
+                        Console.WriteLine($"Address   = {address}");
+                        Console.WriteLine($"CountryID = {countryID}");
+                        Console.WriteLine();
+                    }
+                }
+            }
+        }
+    }
+    catch (SqlException sqlEx)
+    {
+        Console.WriteLine($"SQL Error: {sqlEx.Message}");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}
