@@ -1,0 +1,77 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConnectionTest
+{
+    internal class Program
+    {
+        static string ConnectionString = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+        static void UpdateData(DataForCode DFC, int id)
+        {
+            string Query = @"UPDATE [dbo].[Contacts]
+                             SET [FirstName] = @FirstName,
+                                 [LastName] = @LastName,
+                                 [Email] = @Email, 
+                                 [Phone] = @Phone,
+                                 [Address] = @Address, 
+                                 [CountryID] = @CountryID
+                             WHERE [ContactID] = @ContactID";
+
+            using (SqlConnection Connection = new SqlConnection(ConnectionString))
+            using (SqlCommand Command = new SqlCommand(Query, Connection))
+            {
+                Command.Parameters.AddWithValue("@FirstName", DFC.FirstName);
+                Command.Parameters.AddWithValue("@LastName", DFC.LastName);
+                Command.Parameters.AddWithValue("@Email", DFC.Email);
+                Command.Parameters.AddWithValue("@Phone", DFC.Phone);
+                Command.Parameters.AddWithValue("@Address", DFC.Address);
+                Command.Parameters.AddWithValue("@CountryID", DFC.CountryID);
+                Command.Parameters.AddWithValue("@ContactID", id);
+
+                try
+                {
+                    Connection.Open();
+                    int Result = Command.ExecuteNonQuery();
+
+                    if (Result > 0)
+                        Console.WriteLine(" Update process completed successfully.");
+                    else
+                        Console.WriteLine(" Update failed. No records found.");
+
+                }
+                catch (Exception EX)
+                {
+                    Console.WriteLine($" Error: {EX.Message}");
+                }
+            }
+        }
+
+        public struct DataForCode
+        {
+            public int ID { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string Phone { get; set; }
+            public string Address { get; set; }
+            public int CountryID { get; set; }
+        }
+
+        public static void Main(string[] args)
+        {
+            DataForCode dataForCode = new DataForCode
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Email = "john.doe@email.com",
+                Phone = "123456789",
+                Address = "New York, USA",
+                CountryID = 1
+            };
+
+            UpdateData(dataForCode, 11);
+        }
+    }
+}
