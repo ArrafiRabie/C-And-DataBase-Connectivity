@@ -1,0 +1,62 @@
+using System;
+using System.Data;
+//using System.Net;
+using System.Data.SqlClient;
+
+public class Program
+{
+    static string ConnectionStr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+    static void InsertData(MyData NewData)
+    {
+        SqlConnection Connection = new SqlConnection(ConnectionStr);
+        string Query = @"INSERT INTO Contacts (FirstName, LastName, Email, Phone, Address, CountryID)
+                 VALUES (@FirstName, @LastName, @Email, @Phone, @Address, @CountryID)";
+
+        SqlCommand cmd = new SqlCommand(Query, Connection);
+        cmd.Parameters.Add(new SqlParameter("@FirstName", SqlDbType.VarChar) {Value = NewData.FirstName});
+        cmd.Parameters.Add(new SqlParameter("@LastName", SqlDbType.VarChar) { Value = NewData.LastName });
+        cmd.Parameters.Add(new SqlParameter("@Email", SqlDbType.VarChar) { Value = NewData.Email });
+        cmd.Parameters.Add(new SqlParameter("@Phone", SqlDbType.VarChar) { Value = NewData.Phone });
+        cmd.Parameters.Add(new SqlParameter("@Address", SqlDbType.VarChar) { Value = NewData.Address });
+        cmd.Parameters.Add(new SqlParameter("@CountryID", SqlDbType.VarChar) { Value = NewData.CountryID });
+        try
+        {
+            Connection.Open();
+            int RowsAffected = cmd.ExecuteNonQuery();
+            if (RowsAffected > 0)
+                Console.WriteLine("Record Inserted Succesfully");
+            else
+                Console.WriteLine("Recorde Insertion Feiled");
+        }
+        catch (Exception Ex)
+        {
+            Console.WriteLine("Error " + Ex);
+        }
+    }
+
+    public struct MyData
+    {
+        public int ID { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public string Address { get; set; }
+        public int CountryID { get; set; }
+    }
+    public static void Main()
+    {
+        MyData data = new MyData
+        {
+            FirstName = "Rabie",
+            LastName  = "Arrafi",
+            Email     = "RabieArrafi@gmail.com",
+            Phone     = "0696854745",
+            Address   = "Khouribga Hay Raid 123",
+            CountryID = 1
+        };
+
+        InsertData(data);
+    }
+}
