@@ -1,0 +1,46 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+
+namespace ConnectionTest
+{
+    internal class Program {
+
+        static string ConnectionStr = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+        static bool DeleteContacts(List<int> ContactsID) {
+            if (ContactsID == null || ContactsID.Count == 0)
+                return false;
+            using (SqlConnection Connection = new SqlConnection(ConnectionStr)) {
+
+                List<string> ParaList = new List<string>();
+                for (int i = 0; i < ContactsID.Count; i++)
+                    ParaList.Add($"@ContactID{i}");
+
+                string Query = $"DELETE FROM Contacts WHERE ContactID IN ({string.Join(",",ParaList)})";
+
+                using (SqlCommand Command = new SqlCommand(Query,Connection)) {
+                    for (int i = 0; i < ContactsID.Count; i++)
+                        Command.Parameters.Add(new SqlParameter($"@ContactID{i}", SqlDbType.Int) {Value = ContactsID[i]});
+                    try {
+                        Connection.Open();
+                        return Command.ExecuteNonQuery() > 0;
+                    }
+                    catch (Exception EX) {
+                        Console.WriteLine($" Error {EX.Message}");
+                    }
+                }
+            }
+                return false;
+        }
+
+        public static void Main() {
+            List<int> testfun = new List<int> { 11, 9, 13 };
+            if (DeleteContacts(testfun))
+                Console.WriteLine(" Update process completed successfully ");
+            else
+                Console.WriteLine(" Update failed ");
+        }
+    }
+}
