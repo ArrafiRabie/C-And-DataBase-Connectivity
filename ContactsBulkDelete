@@ -1,3 +1,5 @@
+////////////This first code is safe, fast and well designed.///////////
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -38,6 +40,50 @@ namespace ConnectionTest
         public static void Main() {
             List<int> testfun = new List<int> { 11, 9, 13 };
             if (DeleteContacts(testfun))
+                Console.WriteLine(" Update process completed successfully ");
+            else
+                Console.WriteLine(" Update failed ");
+        }
+    }
+}
+
+
+
+
+
+////////////////////////////////The second code////////////////////////////////////////
+
+using System;
+//using System.Data;
+using System.Data.SqlClient;
+
+namespace ConnectionTest
+{
+    internal class Program {
+
+        static string ConnectionInSql = "Server=.;Database=ContactsDB;User Id=sa;Password=123456";
+
+        static bool BatchContactDeletion(string NumbersIN) {
+            bool Check = false;
+            SqlConnection Connection = new SqlConnection(ConnectionInSql);
+            string Query = @"DELETE FROM Contacts Where ContactID IN(" + NumbersIN + ")";
+            SqlCommand Command = new SqlCommand(Query,Connection);
+            try
+            {
+                Connection.Open();
+                int Result = Command.ExecuteNonQuery();
+                Check = Result > 0;
+                Connection.Close();
+            }
+            catch (Exception EX){
+                Console.WriteLine($"Error {EX.Message}");}
+
+            return Check;
+        }
+
+        public static void Main() {
+
+            if (BatchContactDeletion("11,22,19"))
                 Console.WriteLine(" Update process completed successfully ");
             else
                 Console.WriteLine(" Update failed ");
